@@ -12,11 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export const metadata: Metadata = {
   title: "COFRAME – Brand Collaboration Viewer",
   description:
     "Presentación interactiva para visualizar match branding y reparto de tiempo en el sistema COFRAME.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
+
 
 export default function RootLayout({
   children,
@@ -33,3 +38,4 @@ export default function RootLayout({
     </html>
   );
 }
+
