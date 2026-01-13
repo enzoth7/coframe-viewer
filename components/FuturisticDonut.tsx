@@ -107,17 +107,16 @@ export default function FuturisticDonut({
 
       return config;
     })
-    .filter(
-      (
-        entry,
-      ): entry is {
-        gradientId: string;
-        color: string;
-        length: number;
-        offset: number;
-        brandId?: string;
-      } => Boolean(entry),
-    );
+.filter(
+  (entry): entry is {
+    gradientId: string;
+    color: string;
+    length: number;
+    offset: number;
+    brandId: string | undefined;
+  } => entry !== null,
+);
+
 
   const LEGEND_ITEMS = filteredSegments.map((segment, index) => ({
     ...segment,

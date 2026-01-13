@@ -219,30 +219,29 @@ export default function Home() {
     setCostoExtraPorMarca(nextCostoExtraPorMarca);
   }, [brandTiming, costoFijoEquipo, totalBaseSeconds]);
 
-  const segments: Segment[] = selectedIds
-    .map((id, index) => {
-      if (!id) {
-        return null;
-      }
-      const timing = brandTiming[id];
-      const totalSecondsForBrand =
-        (timing?.baseSeconds ?? 0) + (timing?.extraSeconds ?? 0);
-      if (totalSecondsForBrand <= 0) {
-        return null;
-      }
-      const brand = brands.find((item) => item.id === id);
-      const baseColor =
-        brand?.color ??
-        BRAND_COLOR_PALETTE[index % BRAND_COLOR_PALETTE.length];
+  const segments = selectedIds
+  .map<Segment | null>((id, index) => {
+    if (!id) return null;
 
-      return {
-        label: brand?.name ?? `Marca ${index + 1}`,
-        value: totalSecondsForBrand,
-        color: baseColor,
-        brandId: id,
-      };
-    })
-    .filter((segment): segment is Segment => Boolean(segment));
+    const timing = brandTiming[id];
+    const totalSecondsForBrand =
+      (timing?.baseSeconds ?? 0) + (timing?.extraSeconds ?? 0);
+
+    if (totalSecondsForBrand <= 0) return null;
+
+    const brand = brands.find((item) => item.id === id);
+    const baseColor =
+      brand?.color ?? BRAND_COLOR_PALETTE[index % BRAND_COLOR_PALETTE.length];
+
+    return {
+      label: brand?.name ?? `Marca ${index + 1}`,
+      value: totalSecondsForBrand,
+      color: baseColor,
+      brandId: id,
+    } as Segment; // <- solo para que TS lo trate como Segment
+  })
+  .filter((segment): segment is Segment => segment !== null);
+
 
   const brandColorMap = useMemo(() => {
     const map: Record<string, string> = {};
