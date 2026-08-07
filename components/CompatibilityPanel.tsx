@@ -16,15 +16,15 @@ export type Pair = {
   brandB: string;
   brandBId: string;
   pairScore: number | null;
-  positives: string[];
-  negatives: string[];
-  variables: {
-    arquetiposMarcas: string | null;
-    motivadoresSimbolismos: string | null;
-    nivelSocioeconomico: string | null;
-    nucleoPubObj: string | null;
-    codigoCultural: string | null;
-    contradiccionCultural: string | null;
+  positives?: string[];
+  negatives?: string[];
+  variables?: {
+    arquetiposMarcas?: string | null;
+    motivadoresSimbolismos?: string | null;
+    nivelSocioeconomico?: string | null;
+    nucleoPubObj?: string | null;
+    codigoCultural?: string | null;
+    contradiccionCultural?: string | null;
   };
 };
 
@@ -33,7 +33,7 @@ type Props = {
 };
 
 const VARIABLE_LABELS: Array<{
-  key: keyof Pair["variables"];
+  key: keyof NonNullable<Pair["variables"]>;
   label: string;
 }> = [
   { key: "arquetiposMarcas", label: "Arquetipos de marca" },
@@ -126,7 +126,7 @@ const getVariableIntensityClasses = (value: unknown) => {
 };
 
 const mapContradiccionValue = (
-  value: string | null,
+  value?: string | null,
 ): ContradiccionValue => {
   const normalized = value?.trim().toLowerCase();
   if (normalized === "parcial") return "Parcial";
@@ -158,7 +158,7 @@ export default function CompatibilityPanel({
     }
   };
 
-  if (!pairs.length) return null;
+  if (!pairs || !pairs.length) return null;
 
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-[0_40px_110px_rgba(0,0,0,0.55)] backdrop-blur-xl">
@@ -170,11 +170,13 @@ export default function CompatibilityPanel({
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {pairs.map((pair, index) => {
-          const cardKey = `${pair.brandAId}-${pair.brandBId}-${index}`;
+          const cardKey = `${pair.brandAId || pair.brandA || 'A'}-${pair.brandBId || pair.brandB || 'B'}-${index}`;
           const currentContradiccion =
             contradiccionSelections[cardKey] ??
-            mapContradiccionValue(pair.variables.contradiccionCultural);
+            mapContradiccionValue(pair.variables?.contradiccionCultural);
           const insight = getPairInsight(pair);
+          const positives = pair.positives || [];
+          const negatives = pair.negatives || [];
 
           return (
             <article
@@ -196,7 +198,7 @@ export default function CompatibilityPanel({
               </header>
 
               <div className="grid gap-3">
-                {pair.positives.length > 0 && (
+                {positives.length > 0 && (
                   <div>
                     <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-300">
                       <span className="text-base leading-none text-emerald-300">
@@ -205,7 +207,7 @@ export default function CompatibilityPanel({
                       Positivos
                     </p>
                     <ul className="mt-1 space-y-1 text-emerald-100/80">
-                      {pair.positives.map((item, idx) => (
+                      {positives.map((item, idx) => (
                         <li
                           key={`pos-${cardKey}-${idx}`}
                           className="flex items-start gap-2 text-sm"
@@ -218,7 +220,7 @@ export default function CompatibilityPanel({
                   </div>
                 )}
 
-                {pair.negatives.length > 0 && (
+                {negatives.length > 0 && (
                   <div>
                     <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-rose-300">
                       <span className="text-base leading-none text-rose-300">
@@ -227,7 +229,7 @@ export default function CompatibilityPanel({
                       Negativos
                     </p>
                     <ul className="mt-1 space-y-1 text-rose-100/80">
-                      {pair.negatives.map((item, idx) => (
+                      {negatives.map((item, idx) => (
                         <li
                           key={`neg-${cardKey}-${idx}`}
                           className="flex items-start gap-2 text-sm"
@@ -243,7 +245,7 @@ export default function CompatibilityPanel({
 
               <div className="mt-auto grid grid-cols-2 gap-3 text-sm text-zinc-300">
                 {VARIABLE_LABELS.map(({ key, label }) => {
-                  const value = pair.variables[key];
+                  const value = pair.variables ? pair.variables[key] : null;
 
                   if (key === "contradiccionCultural") {
                     return (

@@ -86,7 +86,14 @@ const pickTemplate = (tag: InsightTag, pairName: string) => {
 };
 
 export function getPairInsight(pair: Pair): PairInsight {
-  const vars = pair.variables;
+  const vars = pair?.variables || {
+    arquetiposMarcas: null,
+    motivadoresSimbolismos: null,
+    nivelSocioeconomico: null,
+    nucleoPubObj: null,
+    codigoCultural: null,
+    contradiccionCultural: null,
+  };
 
   const codigoScore = normalizeToUnit(vars.codigoCultural);
   const nucleoScore = normalizeToUnit(vars.nucleoPubObj);
@@ -140,7 +147,7 @@ export function getPairInsight(pair: Pair): PairInsight {
   }
 
   const pairName =
-    pair.brandA && pair.brandB
+    pair?.brandA && pair?.brandB
       ? `${pair.brandA} y ${pair.brandB}`
       : "las dos marcas";
   const text = pickTemplate(tag, pairName);
